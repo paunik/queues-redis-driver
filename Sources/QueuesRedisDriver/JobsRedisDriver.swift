@@ -170,7 +170,11 @@ extension _QueuesRedisQueue: Queue {
     
     func push(_ id: JobIdentifier) -> EventLoopFuture<Void> {
         self.client.lpush(RedisKey(id.string), into: RedisKey(self.key))
-            .flatMap { _ in self.lrem(RedisKey(id.string), from: RedisKey(self.processingKey)).transform(to: ()) }
+            .flatMap { _ in self.lrem(RedisKey(id.string), from: RedisKey(self.processingKey))
+                .map{ i in
+                    print("removed:\(i)")
+                }
+                .transform(to: ()) }
     }
     
     func pop() -> EventLoopFuture<JobIdentifier?> {
